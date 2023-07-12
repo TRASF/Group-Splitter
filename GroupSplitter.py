@@ -2,19 +2,20 @@ import pandas as pd
 import random, os
 
 OUTPUT_DIR = 'output/'
+FILE_NAME = 'smo66-data.xlsx'
 
 # Read the Excel file into a DataFrame
-data = pd.read_excel("./ep.xlsx")
+data = pd.read_excel(FILE_NAME)
 
 # Group the employees by department and count the number of employees in each department
-nongNong_counts = data["Department"].value_counts()
+nongNong_counts = data["Faculty"].value_counts()
 
 # Display the statistics
-print("Department\tNongNong count")
+print("Faculty\tNongNong count")
 print(nongNong_counts)
 
 # Define the number of groups and the desired group size
-num_groups = 6
+num_groups = 3
 group_size = len(data) // num_groups
 
 # Initialize empty groups
@@ -22,7 +23,7 @@ groups = [[] for _ in range(num_groups)]
 
 # Distribute employees equally across the groups
 for department, count in nongNong_counts.items():
-    nongNongs = data[data["Department"] == department].index.tolist()
+    nongNongs = data[data["Faculty"] == department].index.tolist()
     random.shuffle(nongNongs)
 
     for i, nongNong in enumerate(nongNongs):
@@ -55,6 +56,6 @@ for group_num, group in enumerate(groups, start=1):
     print(f"Total NongNongs: {total_nongNongs}")
 
     # Export the list of employees in each group to an Excel file, and save in the location
-    group_filename = OUTPUT_DIR + f"Group_{group_num}_ragNong.xlsx"
+    group_filename = OUTPUT_DIR + f"Group_{group_num}_ragnong66.xlsx"
     group_data.to_excel(group_filename, index=False)
     print(f"Exported group {group_num} NongNongs to {group_filename}")
