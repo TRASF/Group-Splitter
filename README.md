@@ -1,2 +1,1 @@
-# Group-Splitter
-# Group-Splitter
+Corporation of khun Potter & khun Dech
