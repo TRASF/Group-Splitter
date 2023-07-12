@@ -1,5 +1,7 @@
 import pandas as pd
-import random
+import random, os
+
+OUTPUT_DIR = 'output/'
 
 # Read the Excel file into a DataFrame
 data = pd.read_excel("./ep.xlsx")
@@ -36,12 +38,15 @@ remaining_nongNongs = data[
 
 random.shuffle(remaining_nongNongs.index)
 
-for i, nongNong in enumerate(remaining_nongNongs.index):
+for i, nongNong in enumerate(remaining_nongNongs.index, start=1):
     group_index = i % num_groups
     groups[group_index].append(nongNong)
 
+# create directory for output
+os.makedirs('output', exist_ok=True)
+
 # Display personnel statistics for each group
-for group_num, group in enumerate(groups):
+for group_num, group in enumerate(groups, start=1):
     print(f"\nGroup {group_num} Personnel Statistics:")
     group_data = data.loc[group]
     group_nongNong_counts = group_data["Department"].value_counts()
@@ -49,7 +54,7 @@ for group_num, group in enumerate(groups):
     print(group_nongNong_counts)
     print(f"Total NongNongs: {total_nongNongs}")
 
-    # Export the list of employees in each group to an Excel file
-    group_filename = f"Group_{group_num}_ragNong.xlsx"
+    # Export the list of employees in each group to an Excel file, and save in the location
+    group_filename = OUTPUT_DIR + f"Group_{group_num}_ragNong.xlsx"
     group_data.to_excel(group_filename, index=False)
     print(f"Exported group {group_num} NongNongs to {group_filename}")
