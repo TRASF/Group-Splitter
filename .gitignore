@@ -6,10 +6,8 @@
 .DS_Store
 
 # data file
-attendance.xlsx
-data.xlsx
-data65-all-clean.xlsx
-smo66-data.xlsx
+*.xlsx
+*.csv
 
 # dech's etc file
 encryption.py
