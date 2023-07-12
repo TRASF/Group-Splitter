@@ -1,80 +1,55 @@
-import pandas as panda
+import pandas as pd
 import random
 
-def read_excel_files(fileName):
+# Read the Excel file into a DataFrame
+data = pd.read_excel("./ep.xlsx")
 
-    # Load the information from the desired Excel file
-    nongNongsList = panda.read_excel(fileName, index_col = 0)
+# Group the employees by department and count the number of employees in each department
+nongNong_counts = data["Department"].value_counts()
 
-    # Determine the total number of nongNongs in each department
-    departmentCounter = nongNongsList['Department'].value_counts()
+# Display the statistics
+print("Department\tNongNong count")
+print(nongNong_counts)
 
-    print("Department Statistic Counter\n")
-    # Prevent output of the line ' Name: count, dtype: int64 '
-    print(departmentCounter.to_string(index=True))
-    print(f"Total:\t\t  ", len(nongNongsList))
+# Define the number of groups and the desired group size
+num_groups = 6
+group_size = len(data) // num_groups
 
-    return [nongNongsList, departmentCounter]
+# Initialize empty groups
+groups = [[] for _ in range(num_groups)]
 
-def group_splitter(numberOfGroup, nongNongs):
+# Distribute employees equally across the groups
+for department, count in nongNong_counts.items():
+    nongNongs = data[data["Department"] == department].index.tolist()
+    random.shuffle(nongNongs)
 
-    # Split the data from read_excel_files
-    totalNongNong, departmentCounter = nongNongs
+    for i, nongNong in enumerate(nongNongs):
+        group_index = i % num_groups
+        groups[group_index].append(nongNong)
 
-    # Determine how many nongNongs are in each group
-    groupSize = len(totalNongNong) // numberOfGroup
-    print(f"NongNongs per group:\t   {groupSize}\n")
+# Allocate any remaining employees randomly to groups
+remaining_nongNongs = data[
+    ~data.index.isin(
+        [assigned_nongNong for group in groups for assigned_nongNong in group]
+    )
+]
 
-    groups = [[] for _ in range(numberOfGroup)]
-    logCounter = 0  # For log
+random.shuffle(remaining_nongNongs.index)
 
-    for department, count in departmentCounter.items():
+for i, nongNong in enumerate(remaining_nongNongs.index):
+    group_index = i % num_groups
+    groups[group_index].append(nongNong)
 
-        # Create a list that classifies nongNongs according to their respective departments
-        nongNongList = totalNongNong[totalNongNong['Department'] == department].index.tolist()
+# Display personnel statistics for each group
+for group_num, group in enumerate(groups):
+    print(f"\nGroup {group_num} Personnel Statistics:")
+    group_data = data.loc[group]
+    group_nongNong_counts = group_data["Department"].value_counts()
+    total_nongNongs = len(group_data)
+    print(group_nongNong_counts)
+    print(f"Total NongNongs: {total_nongNongs}")
 
-        # Shuffle the order to ensure each department has an equal chance of being chosen first
-        random.shuffle(nongNongList)
-
-        # Divide the nongNongs into groups in a fair way
-        for index, nongNong in enumerate(nongNongList):
-            indicator = index % numberOfGroup
-            groups[indicator].append(nongNong)
-            logCounter += 1
-
-    # For counting if someone is leftover
-    print("---------- Loop Log ----------")
-    print(f"Log counter:\t   {logCounter}")
-    print("------------------------------")
-    return groups
-
-
-def print_detailed_group_list(nongNongs, groups):
-
-    totalNongNong, departmentCount = nongNongs
-
-    for groupIndicator, group in enumerate(groups):
-
-        print(f"\nGroup {groupIndicator + 1} Personnel Statistics:")
-
-        groupData = totalNongNong.loc[group]
-        nongNongsInGroupCount = groupData['Department'].value_counts()
-        totalInGroup = len(groupData)
-
-        print(nongNongsInGroupCount.to_string(index=True))
-        print(f"Total NongNongs in group:\t {totalInGroup}")
-
-def main():
-
-    fileName = 'ep.xlsx'
-    numberOfGroup = 6
-
-    nongNongs = read_excel_files(fileName)
-    groups = group_splitter(numberOfGroup, nongNongs)
-
-    print_detailed_group_list(nongNongs, groups)
-
-
-if __name__ == '__main__':
-    main()
-
+    # Export the list of employees in each group to an Excel file
+    group_filename = f"Group_{group_num}_ragNong.xlsx"
+    group_data.to_excel(group_filename, index=False)
+    print(f"Exported group {group_num} NongNongs to {group_filename}")
