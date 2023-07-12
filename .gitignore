@@ -1,0 +1,14 @@
+# Directory
+/.vscode
+
+# OS File
+.DS_Store
+
+# data file
+attendance.xlsx
+data.xlsx
+data65-all-clean.xlsx
+
+# dech's etc file
+encryption.py
+xlsx_to_json.py
