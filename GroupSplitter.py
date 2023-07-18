@@ -17,6 +17,7 @@ nongNong_counts = data[FAC_COL_NAME].value_counts()
 # Display the statistics
 print("Department\tNongNong count")
 print(nongNong_counts)
+print("\t --------------- \t")
 
 # Initialize empty groups
 groups = [[] for _ in range(NUM_GROUPS)]
